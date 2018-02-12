@@ -1,6 +1,7 @@
-var difficulty = 0.2; // between 0 and 1
-var cols = 40;
-var rows = 40;
+
+var difficulty = 0.3; // between 0 and 1
+var cols = 44;
+var rows = 30;
 var grid = new Array(cols);
 var startTime = 0;
 var endTime = 0;
@@ -23,8 +24,6 @@ function removeFromArray (arr, ele) {
 }
 
 function heuristic (a, b) {
-	// euclidian distance
-   //return dist(a.x, a.y, b.x, b.y);
    // manhattan distance
    return (abs(a.x - b.x) + abs(a.y - b.y));
 }
@@ -68,7 +67,7 @@ function Cell(_x, _y) {
 
 function setup() {
    startTime = millis();
-	createCanvas(370, 370);
+	createCanvas(windowWidth, windowHeight);
 	// set dimentions for drawing
 	w = width / cols;
 	h = height / rows;
@@ -78,7 +77,8 @@ function setup() {
 	}
 	for (var i = 0; i < cols; i++) {
 		for (var j = 0; j < rows; j++) {
-			grid[i][j] = new Cell(i,j);
+         grid[i][j] = new Cell(i,j);
+         //console.log(grid[i][j]);
 		}
 	}
 	for (var i = 0; i < cols; i++) { // soo inefficient
@@ -86,16 +86,23 @@ function setup() {
 			grid[i][j].addNeighbours(grid);
 		}
 	}
-	// arbitrary start and end points
-	start = grid[floor(random(rows))][floor(random(cols))];
-   end = grid[floor(random(rows))][floor(random(cols))];
+   // arbitrary start and end points
+	//start = grid[floor(random(0, cols/2))][floor(random(0, rows/2))];
+   //end = grid[floor(random(cols/2, cols))][floor(random(rows/2, rows))];
+   // corner start and end points
+   start = grid[2][2];
+   end = grid[cols-2][rows-2]
    // haxx
    start.wall = false;
    end.wall = false;
+   startNeighbors = start.neighbors;
+   endNeighbors = end.neighbors;
+   for (var i = 0; i < 4; i++) {
+      startNeighbors[i].wall = false;
+      endNeighbors[i].wall = false;
+   }
 	// start at the start Cell
 	openSet.push(start);
-
-	console.log(grid);
 }
 
 function draw() {
@@ -127,31 +134,28 @@ function draw() {
 		for (var i = 0; i < neighbors.length; i++) {
 			var neighbor = neighbors[i];
 			// if neighbor has not already been evaluated
-			if (!closedSet.includes(neighbor) && !neighbor.wall) {
+			if (!neighbor.wall && !closedSet.includes(neighbor)) {
             var tempG = current.g + 1;
-            var newPath = false;
+            var shorter = true;
 				// check if already eval with lower g score
 				if (openSet.includes(neighbor)) {
-					if (tempG < neighbor.g) {
-                  neighbor.g = tempG;
-                  newPath = true;
+					if (tempG > neighbor.g) {
+                  shorter = false;
 					}
 				}
 				// in not in either set, add to open set
 				else {
-               neighbor.g = tempG;
-               newPath = true;
 					openSet.push(neighbor);
 				}
 				// TODO: refactor these into if above
             // this is the current best path, record it
-            if (newPath) {
+            if (shorter) {
+               neighbor.g = tempG;
                neighbor.h = heuristic(neighbor, end);
                neighbor.f = neighbor.g + neighbor.h;
                neighbor.previous = current;
             }
 			}
-			
 		}
 	} else {
       // no solution
@@ -162,16 +166,16 @@ function draw() {
 	// color cells initially as background
 	for (var i = 0; i < cols; i++) {
 		for (var j = 0; j < rows; j++) {
-			grid[i][j].show(color(19,17,25));
+			grid[i][j].show(color(19, 17, 25));
 		}
 	}
-	// color cells in closed set red
-	for (var i = 0; i < closedSet.length; i++) {
-		closedSet[i].show(color(150,30,40))
-	}
-	// color cells in open set green
+	// color cells in closed set green
+   for (var i = 0; i < closedSet.length; i++) {
+   	closedSet[i].show(color(50, 80, 105))
+   }
+	// // color cells in open set red
 	for (var i = 0; i < openSet.length; i++) {
-		openSet[i].show(color(20,120,40))			
+		openSet[i].show(color(120, 30, 40))			
    }
    start.show(255);
    end.show(255);
@@ -183,7 +187,17 @@ function draw() {
       path.push(temp.previous);
       temp = temp.previous;
    }
+   // color cells of current path
+   // for (var i = 0; i < path.length; i++) {
+   //    path[i].show(color(20, 40, 120));
+   // }
+   // draw continuous shape along path
+   noFill();
+   stroke(255);
+   strokeWeight(w/1.4);
+   beginShape();
    for (var i = 0; i < path.length; i++) {
-      path[i].show(color(20, 40, 120));
+	   vertex(path[i].x * w + w / 2, path[i].y * h + h / 2);
    }
+   endShape();
 }
