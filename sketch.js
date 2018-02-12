@@ -169,13 +169,13 @@ function draw() {
 			grid[i][j].show(color(19, 17, 25));
 		}
 	}
-	// color cells in closed set green
+	// color cells in closed set blue
    for (var i = 0; i < closedSet.length; i++) {
-   	closedSet[i].show(color(50, 80, 105))
+   	closedSet[i].show(color(35, 76, 115))
    }
-	// // color cells in open set red
+	// // color cells in open set pink
 	for (var i = 0; i < openSet.length; i++) {
-		openSet[i].show(color(120, 30, 40))			
+		openSet[i].show(color(108, 47, 121))			
    }
    start.show(255);
    end.show(255);
