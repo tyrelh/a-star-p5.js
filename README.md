@@ -1,7 +1,7 @@
 # A* visual in p5.js
 An A* path-finding algorithm displayed visually with p5.js.
 
-Visual can be seen on my site [here](https://tyrelh.github.io/a-star-p5js/). I might improve the UI of this page in the future, but currently just refresh the page to run again. If the screen goes black then no path exists for that iteration of the map, just refresh to generate a new one.
+I might improve the UI of this page in the future, but currently just refresh the page to run again. If the screen goes black then no path exists for that iteration of the map, just refresh to generate a new one.
 
 This project was developed to help me learn and understand A*.
 
